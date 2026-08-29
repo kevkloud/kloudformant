@@ -1,0 +1,74 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # The DSP core has no JUCE dependency, so the claims this plugin makes about
+  # itself can be checked in seconds on a bare container -- no framework, no
+  # submodule, no audio backend. It runs first and independently, because it is
+  # the job whose failure actually means something is broken.
+  dsp:
+    name: DSP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -B build -DVELLUM_DSP_ONLY=ON -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Measure
+        run: ./build/measure profile
+
+  plugin:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+            # Universal, so one download covers Apple Silicon and Intel.
+            extra_cmake: -DCMAKE_OSX_ARCHITECTURES=arm64;x86_64
+          - name: Windows
+            os: windows-latest
+            extra_cmake: ""
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release "${{ matrix.extra_cmake }}"
+
+      - name: Build
+        run: cmake --build build --config Release --parallel 4
+
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Stage artefacts
+        shell: bash
+        run: |
+          mkdir -p out
+          cp -R build/Vellum_artefacts/Release/VST3/Vellum.vst3 out/
+          if [ -d build/Vellum_artefacts/Release/AU/Vellum.component ]; then
+            cp -R build/Vellum_artefacts/Release/AU/Vellum.component out/
+          fi
+          cp LICENSE out/LICENSE.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Vellum-${{ matrix.name }}
+          path: out/
