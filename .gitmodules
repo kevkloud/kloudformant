@@ -2,3 +2,4 @@
 	path = libs/JUCE
 	url = https://github.com/juce-framework/JUCE.git
 	shallow = true
+	branch = 8.0.4

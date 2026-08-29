@@ -7,7 +7,13 @@ Formant only. The pitch is never touched.
 
 ## Status
 
-DSP core complete and tested. Plugin wrapper and panel in progress.
+Complete and tested. The DSP core, the plugin wrapper, the panel, the offline
+measurement harness and CI are all in.
+
+Not yet done: nobody has heard it. Every number below is measured, and the DSP
+runs correctly on synthetic material, but it has not been through a session on a
+real vocal — which is the only test that decides whether "colourless" was the
+right target.
 
 ## The idea
 
@@ -41,19 +47,32 @@ From `tests/DspTests.cpp`, which asserts every number below.
 
 | | |
 |---|---|
-| Null at zero shift | **exactly zero error** — bitwise identical to the delayed input |
-| Inter-harmonic energy added | −79 to −94 dB across ±12 semitones |
-| Frame-rate modulation, sustained vowel | −60 dB (a phase vocoder: −20 to −35 dB) |
-| Formant placement accuracy | F2/F3 within 1–4 %, F1 within 10 % |
+| Null at zero shift, Fast and Normal | **bitwise identical** to the delayed input |
+| Null at zero shift, Smooth | −144 dB — one unit in the last place of a 32-bit sample |
+| Inter-harmonic energy added | −85 to −103 dB across ±12 semitones |
+| Frame-rate modulation, sustained vowel | −58 to −80 dB (a phase vocoder: −20 to −35 dB) |
+| Formant placement, F2 and F3 | within 2 % over ±3 st, within 5 % over ±7 st |
+| Formant placement, F1 | within 8 % |
 | Harmonic comb surviving in the envelope | −175 dB |
 | Correction filter energy outside the zero-padding | −149 dB |
-| Level change with Level Match on | 0.4 dB |
+| Level change with Level Match on | within 0.2 dB to ±7 st, 1.9 dB at ±12 st |
+
+Regenerate them with `./build/measure profile`.
 
 The formant figures are measured against a synthetic vowel — a bandlimited
 glottal pulse train through resonators at known frequencies — so "correct" is
 defined rather than guessed at, and the shift is asserted as the *ratio* between
 the measured input and output positions so that any bias in the peak finder
 cancels out.
+
+Two honest caveats. F1 is the least precisely measurable of the three: at a
+110 Hz fundamental it is only the fifth harmonic, so there are few partials
+under the resonance to locate it with, and the figure is as much about the
+measurement as the plugin. And past about +5 semitones the top formant starts
+to fall short of its target, because moving it that far up a spectrum that has
+already rolled off asks for more than the correction filter's ±24 dB clamp will
+give — which is the right call for a plugin whose job is to sound natural, and
+another reason the useful range is smaller than the control's range.
 
 ## Why other formant shifters sound robotic
 
