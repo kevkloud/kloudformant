@@ -34,11 +34,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout create()
 
     // Semitones rather than a ratio: it is the unit every other formant control
     // in a studio uses, and it makes "down a fifth" a thing you can dial rather
-    // than compute. Two decimal places because the useful range for a natural
-    // result is small -- most of the work happens inside +/-4 st.
+    // than compute. Continuous rather than stepped: a 0.01 snap interval is not
+    // exactly representable in float, and NormalisableRange::snapToLegalValue
+    // rounds the default (shift = 0) to -2.68e-7 instead of 0.0 -- silently
+    // reintroducing the shift this plugin exists to prove is inaudible at zero.
+    // Display is still rounded to two decimals via the string function below.
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { kShift, kVersionHint }, "Shift",
-        juce::NormalisableRange<float> { -12.0f, 12.0f, 0.01f }, 0.0f,
+        juce::NormalisableRange<float> { -12.0f, 12.0f }, 0.0f,
         Attributes {}.withLabel ("st")
                      .withStringFromValueFunction ([] (float v, int)
                      {
@@ -88,9 +91,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout create()
                          return juce::String (juce::roundToInt (v));
                      })));
 
+    // Continuous for the same reason as Shift above: a 0.1 interval snaps the
+    // 0 dB default a few ULPs off unity gain, which is not "no trim" any more.
     layout.add (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { kTrim, kVersionHint }, "Trim",
-        juce::NormalisableRange<float> { -24.0f, 24.0f, 0.1f }, 0.0f,
+        juce::NormalisableRange<float> { -24.0f, 24.0f }, 0.0f,
         Attributes {}.withLabel ("dB")
                      .withStringFromValueFunction ([] (float v, int)
                      {

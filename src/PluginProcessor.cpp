@@ -38,6 +38,8 @@ VellumAudioProcessor::~VellumAudioProcessor()
 //==============================================================================
 void VellumAudioProcessor::prepareToPlay (double sampleRate, int maximumExpectedSamplesPerBlock)
 {
+    sampleRateForTail.store (sampleRate, std::memory_order_relaxed);
+
     dsp.prepare (sampleRate, maximumExpectedSamplesPerBlock,
                  juce::jmax (1, getTotalNumInputChannels()));
 
@@ -54,7 +56,7 @@ void VellumAudioProcessor::releaseResources()
 
 double VellumAudioProcessor::getTailLengthSeconds() const
 {
-    const auto rate = getSampleRate();
+    const auto rate = sampleRateForTail.load (std::memory_order_relaxed);
 
     return rate > 0.0 ? (double) dsp.getLatencySamples() / rate : 0.0;
 }

@@ -68,6 +68,12 @@ private:
 
     vellum::DspCore::Params currentParams() const noexcept;
 
+    // Recorded directly in prepareToPlay rather than read back via
+    // AudioProcessor::getSampleRate(), which is only populated once the host
+    // wrapper has called setRateAndBufferSizeDetails -- a step prepareToPlay
+    // does not perform itself, so getTailLengthSeconds must not depend on it.
+    std::atomic<double> sampleRateForTail { 0.0 };
+
     static float read (const std::array<std::atomic<float>, 2>& a, int ch) noexcept
     {
         return a[(size_t) juce::jlimit (0, 1, ch)].load (std::memory_order_relaxed);
