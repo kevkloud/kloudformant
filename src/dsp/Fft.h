@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace vellum
+namespace kloudformant
 {
 
 /** Iterative radix-2 FFT.
@@ -141,4 +141,4 @@ private:
     std::vector<std::complex<double>> twiddles;
 };
 
-} // namespace vellum
+} // namespace kloudformant

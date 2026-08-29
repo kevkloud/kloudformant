@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-using namespace vellum;
+using namespace kloudformant;
 
 namespace
 {
@@ -907,7 +907,7 @@ static void testBlockSizeIndependence()
 //==============================================================================
 int main()
 {
-    std::cout << "Vellum DSP tests\n";
+    std::cout << "KloudFormant DSP tests\n";
 
     testFftRoundTrip();
     testColourlessAtZeroShift();

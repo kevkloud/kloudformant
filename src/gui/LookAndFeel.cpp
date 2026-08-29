@@ -1,9 +1,9 @@
 #include "LookAndFeel.h"
 
-namespace vellum::gui
+namespace kloudformant::gui
 {
 
-VellumLookAndFeel::VellumLookAndFeel()
+KloudFormantLookAndFeel::KloudFormantLookAndFeel()
 {
     setColour (juce::ResizableWindow::backgroundColourId, theme::background);
     setColour (juce::Label::textColourId,                 theme::text);
@@ -12,14 +12,14 @@ VellumLookAndFeel::VellumLookAndFeel()
     setColour (juce::TooltipWindow::outlineColourId,      theme::outline);
 }
 
-juce::Font VellumLookAndFeel::getLabelFont (juce::Label& label)
+juce::Font KloudFormantLookAndFeel::getLabelFont (juce::Label& label)
 {
     return theme::labelFont (label.getHeight() > 0 ? juce::jmin (12.0f, (float) label.getHeight())
                                                    : 11.0f);
 }
 
 //==============================================================================
-void VellumLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
+void KloudFormantLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
                                           float sliderPos, float startAngle, float endAngle,
                                           juce::Slider& slider)
 {
@@ -100,7 +100,7 @@ void VellumLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, int w
 }
 
 //==============================================================================
-void VellumLookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
+void KloudFormantLookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
                                           bool shouldDrawHighlighted, bool shouldDrawDown)
 {
     const auto bounds = button.getLocalBounds().toFloat().reduced (0.5f);
@@ -126,4 +126,4 @@ void VellumLookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton&
     g.drawText (button.getButtonText(), bounds, juce::Justification::centred, false);
 }
 
-} // namespace vellum::gui
+} // namespace kloudformant::gui

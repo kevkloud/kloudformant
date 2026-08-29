@@ -8,7 +8,7 @@
 #include <complex>
 #include <vector>
 
-namespace vellum
+namespace kloudformant
 {
 
 enum class Tracking { fast = 0, normal = 1, smooth = 2 };
@@ -190,4 +190,4 @@ private:
     double lastRatio = 1.0, lastLowPivot = 0.0, lastHighPivot = 0.0;
 };
 
-} // namespace vellum
+} // namespace kloudformant

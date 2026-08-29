@@ -8,16 +8,16 @@
 
 //==============================================================================
 /** The host-facing wrapper. Everything that touches audio lives in
-    vellum::DspCore, which has no JUCE dependency; this class exists to move
+    kloudformant::DspCore, which has no JUCE dependency; this class exists to move
     parameter values into it, report latency, and keep the editor supplied.
 */
-class VellumAudioProcessor final : public juce::AudioProcessor,
+class KloudFormantAudioProcessor final : public juce::AudioProcessor,
                                    private juce::AudioProcessorValueTreeState::Listener,
                                    private juce::AsyncUpdater
 {
 public:
-    VellumAudioProcessor();
-    ~VellumAudioProcessor() override;
+    KloudFormantAudioProcessor();
+    ~KloudFormantAudioProcessor() override;
 
     //== AudioProcessor ========================================================
     void prepareToPlay (double sampleRate, int maximumExpectedSamplesPerBlock) override;
@@ -52,7 +52,7 @@ public:
 
     /** For the spectrum display. Copies out of the audio thread's published
         analysis; never blocks it. */
-    void copyDisplayFrame (vellum::FormantShifter::DisplayFrame& out) const
+    void copyDisplayFrame (kloudformant::FormantShifter::DisplayFrame& out) const
     {
         dsp.copyDisplayFrame (out);
     }
@@ -66,7 +66,7 @@ private:
     void parameterChanged (const juce::String& parameterID, float newValue) override;
     void handleAsyncUpdate() override;
 
-    vellum::DspCore::Params currentParams() const noexcept;
+    kloudformant::DspCore::Params currentParams() const noexcept;
 
     // Recorded directly in prepareToPlay rather than read back via
     // AudioProcessor::getSampleRate(), which is only populated once the host
@@ -94,7 +94,7 @@ private:
     std::atomic<float>* trimParam       = nullptr;
     std::atomic<float>* bypassParam     = nullptr;
 
-    vellum::DspCore dsp;
+    kloudformant::DspCore dsp;
 
     // Latency is only pushed to the host when it actually changes. Automating
     // Tracking otherwise floods the host with setLatencySamples calls on every
@@ -105,5 +105,5 @@ private:
     std::array<std::atomic<float>, 2> inputPeak  { };
     std::array<std::atomic<float>, 2> outputPeak { };
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VellumAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KloudFormantAudioProcessor)
 };

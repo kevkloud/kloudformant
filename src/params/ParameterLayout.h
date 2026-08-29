@@ -2,7 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-namespace vellum::params
+namespace kloudformant::params
 {
 
 //==============================================================================
@@ -32,4 +32,4 @@ inline constexpr int kStateVersion = 1;
 
 juce::AudioProcessorValueTreeState::ParameterLayout create();
 
-} // namespace vellum::params
+} // namespace kloudformant::params

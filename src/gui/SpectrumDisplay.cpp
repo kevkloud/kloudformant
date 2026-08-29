@@ -1,7 +1,7 @@
 #include "SpectrumDisplay.h"
 #include "PluginProcessor.h"
 
-namespace vellum::gui
+namespace kloudformant::gui
 {
 
 namespace
@@ -16,7 +16,7 @@ namespace
     constexpr float kEnvelopeTrimDb = -6.0f;
 }
 
-SpectrumDisplay::SpectrumDisplay (VellumAudioProcessor& p)
+SpectrumDisplay::SpectrumDisplay (KloudFormantAudioProcessor& p)
     : processorRef (p)
 {
     setInterceptsMouseClicks (false, false);
@@ -219,4 +219,4 @@ void SpectrumDisplay::paint (juce::Graphics& g)
     g.drawRoundedRectangle (getLocalBounds().toFloat().reduced (0.5f), theme::corner, 1.0f);
 }
 
-} // namespace vellum::gui
+} // namespace kloudformant::gui

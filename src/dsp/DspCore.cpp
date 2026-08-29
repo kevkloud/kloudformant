@@ -1,6 +1,6 @@
 #include "DspCore.h"
 
-namespace vellum
+namespace kloudformant
 {
 
 namespace
@@ -169,4 +169,4 @@ void DspCore::process (float* const* channels, int numChannels, int numSamples) 
     dryWrite = (startWrite + numSamples) % dryLength;
 }
 
-} // namespace vellum
+} // namespace kloudformant

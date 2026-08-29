@@ -5,7 +5,7 @@
 #include <complex>
 #include <vector>
 
-namespace vellum
+namespace kloudformant
 {
 
 /** What one frame's analysis produced. */
@@ -100,4 +100,4 @@ private:
     static constexpr double kConvergenceDb = 0.5;
 };
 
-} // namespace vellum
+} // namespace kloudformant

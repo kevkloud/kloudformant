@@ -1,4 +1,4 @@
-# Vellum — a colorless formant shifter
+# KloudFormant — a colorless formant shifter
 
 ## The brief
 
@@ -86,7 +86,7 @@ across bins and the pulse smears into a buzz. This is the classic "phasiness",
 and it is present at *any* shift setting, including none, because the signal was
 taken apart and put back together either way.
 
-**Vellum never resynthesizes.** See Part 3.
+**KloudFormant never resynthesizes.** See Part 3.
 
 ### 2. Envelope estimators that track harmonics
 
@@ -97,7 +97,7 @@ harmonics are far apart and the "envelope" ends up following individual
 partials. Shifting then drags partials around relative to each other, and you
 hear beating, chorusing, and pitch instability that was never in the input.
 
-**Vellum uses the True Envelope estimator** (Röbel & Rodet), an iterative
+**KloudFormant uses the True Envelope estimator** (Röbel & Rodet), an iterative
 cepstral method whose order is locked to the measured f0 so it is
 mathematically incapable of resolving the harmonic spacing.
 
@@ -111,7 +111,7 @@ term along with the formants, which is why shifting down sounds boomy and dull
 and shifting up sounds thin and brittle — the tonal balance changed on top of
 the formants moving.
 
-**Vellum warps only a band**, with a low pivot below which nothing moves and a
+**KloudFormant warps only a band**, with a low pivot below which nothing moves and a
 high pivot above which the shift tapers back out.
 
 ### 4. Dragging the region around the fundamental
@@ -130,7 +130,7 @@ behind the constriction barely contributes. Scaling them by the same ratio as
 the vowels is what produces the lisp and the robotic chirp on sibilants that
 gives the effect away instantly.
 
-**Vellum measures voicedness per frame** (free, from the same cepstrum used for
+**KloudFormant measures voicedness per frame** (free, from the same cepstrum used for
 f0) and pulls the shift back toward zero on unvoiced frames, by a settable
 amount.
 
@@ -140,7 +140,7 @@ Moving an envelope over a fixed source changes how much energy lands where the
 source has energy, so the level moves with the knob. You then can't A/B the
 setting honestly, and louder wins.
 
-**Vellum computes the broadband gain the correction filter would apply to
+**KloudFormant computes the broadband gain the correction filter would apply to
 *this* signal and takes it back out.**
 
 ---
@@ -152,7 +152,7 @@ setting honestly, and louder wins.
 Standard approach: separate source from filter, warp the filter, resynthesize
 source × warped filter. The resynthesis is the problem.
 
-Vellum's approach: separate source from filter, warp the filter, then compute
+KloudFormant's approach: separate source from filter, warp the filter, then compute
 the **difference between the warped filter and the original filter** and apply
 that difference to the untouched input signal.
 
@@ -186,7 +186,7 @@ cancellation — whatever the estimator got wrong is what you hear.
 smears real transients, so you trade frequency resolution against consonant
 clarity. Here the window only sets how fast the *filter* tracks. A 43 ms window
 means the EQ curve is averaged over 43 ms and updated every 11 ms; the consonant
-underneath it is not touched at all. That lets Vellum use a window long enough
+underneath it is not touched at all. That lets KloudFormant use a window long enough
 to resolve a male fundamental without the usual cost.
 
 ### Signal flow

@@ -1,6 +1,6 @@
 #include "Controls.h"
 
-namespace vellum::gui
+namespace kloudformant::gui
 {
 
 //==============================================================================
@@ -152,4 +152,4 @@ void LevelMeter::paint (juce::Graphics& g)
     g.drawRoundedRectangle (bounds.reduced (0.5f), 2.0f, 1.0f);
 }
 
-} // namespace vellum::gui
+} // namespace kloudformant::gui

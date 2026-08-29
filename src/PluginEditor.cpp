@@ -1,6 +1,6 @@
 #include "PluginEditor.h"
 
-using namespace vellum;
+using namespace kloudformant;
 
 namespace
 {
@@ -9,7 +9,7 @@ namespace
     constexpr int kAnalyserHeight = 190;
 }
 
-VellumAudioProcessorEditor::VellumAudioProcessorEditor (VellumAudioProcessor& p)
+KloudFormantAudioProcessorEditor::KloudFormantAudioProcessorEditor (KloudFormantAudioProcessor& p)
     : AudioProcessorEditor (&p),
       processorRef (p),
       analyser (p),
@@ -58,13 +58,13 @@ VellumAudioProcessorEditor::VellumAudioProcessorEditor (VellumAudioProcessor& p)
     setSize (kWidth, kHeight);
 }
 
-VellumAudioProcessorEditor::~VellumAudioProcessorEditor()
+KloudFormantAudioProcessorEditor::~KloudFormantAudioProcessorEditor()
 {
     setLookAndFeel (nullptr);
 }
 
 //==============================================================================
-void VellumAudioProcessorEditor::resized()
+void KloudFormantAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds().reduced (kMargin);
 
@@ -133,7 +133,7 @@ void VellumAudioProcessorEditor::resized()
 }
 
 //==============================================================================
-void VellumAudioProcessorEditor::drawSection (juce::Graphics& g, juce::Rectangle<int> area,
+void KloudFormantAudioProcessorEditor::drawSection (juce::Graphics& g, juce::Rectangle<int> area,
                                               const juce::String& caption) const
 {
     g.setColour (theme::panel);
@@ -148,7 +148,7 @@ void VellumAudioProcessorEditor::drawSection (juce::Graphics& g, juce::Rectangle
                 juce::Justification::topLeft, false);
 }
 
-void VellumAudioProcessorEditor::paint (juce::Graphics& g)
+void KloudFormantAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (theme::background);
 
@@ -156,7 +156,7 @@ void VellumAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (theme::text);
     g.setFont (theme::labelFont (13.0f));
-    g.drawText ("VELLUM", title, juce::Justification::topLeft, false);
+    g.drawText ("KLOUDFORMANT", title, juce::Justification::topLeft, false);
 
     g.setColour (theme::textDim);
     g.setFont (theme::labelFont (10.0f));

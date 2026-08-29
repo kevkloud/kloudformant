@@ -17,11 +17,11 @@
     The finish is FrostyEQ's, which is Ableton's: flat, no bevels, value arcs,
     and a dark well for the analyser.
 */
-class VellumAudioProcessorEditor final : public juce::AudioProcessorEditor
+class KloudFormantAudioProcessorEditor final : public juce::AudioProcessorEditor
 {
 public:
-    explicit VellumAudioProcessorEditor (VellumAudioProcessor&);
-    ~VellumAudioProcessorEditor() override;
+    explicit KloudFormantAudioProcessorEditor (KloudFormantAudioProcessor&);
+    ~KloudFormantAudioProcessorEditor() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
@@ -29,24 +29,24 @@ public:
 private:
     void drawSection (juce::Graphics&, juce::Rectangle<int>, const juce::String& caption) const;
 
-    VellumAudioProcessor& processorRef;
-    vellum::gui::VellumLookAndFeel lookAndFeel;
+    KloudFormantAudioProcessor& processorRef;
+    kloudformant::gui::KloudFormantLookAndFeel lookAndFeel;
 
-    vellum::gui::SpectrumDisplay analyser;
+    kloudformant::gui::SpectrumDisplay analyser;
 
-    vellum::gui::LabelledKnob shift;
-    vellum::gui::LabelledKnob lowPivot, highPivot, consonants, resolution;
-    vellum::gui::LabelledKnob mix, trim;
+    kloudformant::gui::LabelledKnob shift;
+    kloudformant::gui::LabelledKnob lowPivot, highPivot, consonants, resolution;
+    kloudformant::gui::LabelledKnob mix, trim;
 
-    vellum::gui::SwitchButton levelMatch, bypass;
+    kloudformant::gui::SwitchButton levelMatch, bypass;
 
     juce::ComboBox trackingChooser;
     juce::Label trackingCaption;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> trackingAttachment;
 
-    vellum::gui::LevelMeter inputMeter, outputMeter;
+    kloudformant::gui::LevelMeter inputMeter, outputMeter;
 
     juce::Rectangle<int> shiftSection, naturalSection, outputSection;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VellumAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KloudFormantAudioProcessorEditor)
 };

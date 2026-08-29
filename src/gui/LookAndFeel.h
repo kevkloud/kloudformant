@@ -2,7 +2,7 @@
 
 #include "Theme.h"
 
-namespace vellum::gui
+namespace kloudformant::gui
 {
 
 /** A slider that knows whether its value arc should grow from the centre
@@ -25,10 +25,10 @@ private:
 };
 
 //==============================================================================
-class VellumLookAndFeel final : public juce::LookAndFeel_V4
+class KloudFormantLookAndFeel final : public juce::LookAndFeel_V4
 {
 public:
-    VellumLookAndFeel();
+    KloudFormantLookAndFeel();
 
     void drawRotarySlider (juce::Graphics&, int x, int y, int width, int height,
                            float sliderPos, float startAngle, float endAngle,
@@ -40,4 +40,4 @@ public:
     juce::Font getLabelFont (juce::Label&) override;
 };
 
-} // namespace vellum::gui
+} // namespace kloudformant::gui

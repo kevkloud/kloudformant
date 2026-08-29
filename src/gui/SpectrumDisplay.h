@@ -4,9 +4,9 @@
 #include "Theme.h"
 #include "dsp/FormantShifter.h"
 
-class VellumAudioProcessor;
+class KloudFormantAudioProcessor;
 
-namespace vellum::gui
+namespace kloudformant::gui
 {
 
 /** The analyser: input spectrum behind, the measured envelope over it, and the
@@ -26,7 +26,7 @@ class SpectrumDisplay final : public juce::Component,
                               private juce::Timer
 {
 public:
-    explicit SpectrumDisplay (VellumAudioProcessor&);
+    explicit SpectrumDisplay (KloudFormantAudioProcessor&);
 
     void paint (juce::Graphics&) override;
     void resized() override;
@@ -49,7 +49,7 @@ private:
         done and where -- and shows nothing at all when the shift is zero. */
     void buildBandPath (juce::Path&, double binWidthHz) const;
 
-    VellumAudioProcessor& processorRef;
+    KloudFormantAudioProcessor& processorRef;
 
     FormantShifter::DisplayFrame frame;
 
@@ -67,4 +67,4 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpectrumDisplay)
 };
 
-} // namespace vellum::gui
+} // namespace kloudformant::gui

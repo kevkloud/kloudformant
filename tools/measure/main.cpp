@@ -24,7 +24,7 @@
 #include <sstream>
 #include <vector>
 
-using namespace vellum;
+using namespace kloudformant;
 
 namespace
 {

@@ -4,7 +4,7 @@
 #include "LookAndFeel.h"
 #include <functional>
 
-namespace vellum::gui
+namespace kloudformant::gui
 {
 
 /** Caption above, knob, live value readout below -- the arrangement Live uses
@@ -95,4 +95,4 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LevelMeter)
 };
 
-} // namespace vellum::gui
+} // namespace kloudformant::gui

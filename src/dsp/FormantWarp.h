@@ -4,7 +4,7 @@
 #include <cmath>
 #include <vector>
 
-namespace vellum
+namespace kloudformant
 {
 
 /** The frequency map that says, for each output bin, where in the *original*
@@ -131,4 +131,4 @@ private:
     bool identity = true;
 };
 
-} // namespace vellum
+} // namespace kloudformant

@@ -20,15 +20,15 @@ namespace
 */
 static void testSchemaIsStable()
 {
-    VellumAudioProcessor processor;
+    KloudFormantAudioProcessor processor;
     auto& apvts = processor.getApvts();
 
     // Every ID that has ever shipped must still resolve.
-    for (auto id : { vellum::params::kShift, vellum::params::kLowPivot,
-                     vellum::params::kHighPivot, vellum::params::kConsonants,
-                     vellum::params::kResolution, vellum::params::kTracking,
-                     vellum::params::kLevelMatch, vellum::params::kMix,
-                     vellum::params::kTrim, vellum::params::kBypass })
+    for (auto id : { kloudformant::params::kShift, kloudformant::params::kLowPivot,
+                     kloudformant::params::kHighPivot, kloudformant::params::kConsonants,
+                     kloudformant::params::kResolution, kloudformant::params::kTracking,
+                     kloudformant::params::kLevelMatch, kloudformant::params::kMix,
+                     kloudformant::params::kTrim, kloudformant::params::kBypass })
     {
         check (apvts.getParameter (id) != nullptr,
                std::string ("parameter '") + id + "' exists");
@@ -37,19 +37,19 @@ static void testSchemaIsStable()
 
 static void testDefaultsAreTransparent()
 {
-    VellumAudioProcessor processor;
+    KloudFormantAudioProcessor processor;
     auto& apvts = processor.getApvts();
 
     // The plugin must open doing nothing. A formant shifter that arrives with a
     // shift dialled in is a formant shifter you cannot trust as an insert.
-    check (apvts.getParameter (vellum::params::kShift)->getValue()
-               == apvts.getParameter (vellum::params::kShift)->getDefaultValue(),
+    check (apvts.getParameter (kloudformant::params::kShift)->getValue()
+               == apvts.getParameter (kloudformant::params::kShift)->getDefaultValue(),
            "shift opens at its default");
 
-    check (*apvts.getRawParameterValue (vellum::params::kShift) == 0.0f,
+    check (*apvts.getRawParameterValue (kloudformant::params::kShift) == 0.0f,
            "the default shift is exactly zero");
 
-    check (*apvts.getRawParameterValue (vellum::params::kMix) == 100.0f,
+    check (*apvts.getRawParameterValue (kloudformant::params::kMix) == 100.0f,
            "the default mix is fully wet");
 }
 
@@ -58,32 +58,32 @@ static void testStateRoundTrips()
     juce::MemoryBlock saved;
 
     {
-        VellumAudioProcessor processor;
+        KloudFormantAudioProcessor processor;
         auto& apvts = processor.getApvts();
 
-        apvts.getParameter (vellum::params::kShift)->setValueNotifyingHost (0.75f);
-        apvts.getParameter (vellum::params::kConsonants)->setValueNotifyingHost (0.25f);
-        apvts.getParameter (vellum::params::kLevelMatch)->setValueNotifyingHost (0.0f);
+        apvts.getParameter (kloudformant::params::kShift)->setValueNotifyingHost (0.75f);
+        apvts.getParameter (kloudformant::params::kConsonants)->setValueNotifyingHost (0.25f);
+        apvts.getParameter (kloudformant::params::kLevelMatch)->setValueNotifyingHost (0.0f);
 
         processor.getStateInformation (saved);
     }
 
-    VellumAudioProcessor restored;
+    KloudFormantAudioProcessor restored;
     restored.setStateInformation (saved.getData(), (int) saved.getSize());
 
     auto& apvts = restored.getApvts();
 
-    check (std::abs (apvts.getParameter (vellum::params::kShift)->getValue() - 0.75f) < 1.0e-4f,
+    check (std::abs (apvts.getParameter (kloudformant::params::kShift)->getValue() - 0.75f) < 1.0e-4f,
            "shift survives a save and reload");
-    check (std::abs (apvts.getParameter (vellum::params::kConsonants)->getValue() - 0.25f) < 1.0e-4f,
+    check (std::abs (apvts.getParameter (kloudformant::params::kConsonants)->getValue() - 0.25f) < 1.0e-4f,
            "consonants survives a save and reload");
-    check (apvts.getParameter (vellum::params::kLevelMatch)->getValue() < 0.5f,
+    check (apvts.getParameter (kloudformant::params::kLevelMatch)->getValue() < 0.5f,
            "level match survives a save and reload");
 }
 
 static void testLatencyIsReported()
 {
-    VellumAudioProcessor processor;
+    KloudFormantAudioProcessor processor;
     processor.prepareToPlay (48000.0, 512);
 
     // A spectral process that does not declare its latency drags the whole
@@ -94,7 +94,7 @@ static void testLatencyIsReported()
 
 static void testBusLayouts()
 {
-    VellumAudioProcessor processor;
+    KloudFormantAudioProcessor processor;
 
     const auto supports = [&] (const juce::AudioChannelSet& set)
     {
@@ -110,7 +110,7 @@ static void testBusLayouts()
 
 static void testProcessesWithoutCrashing()
 {
-    VellumAudioProcessor processor;
+    KloudFormantAudioProcessor processor;
     processor.prepareToPlay (48000.0, 256);
 
     juce::AudioBuffer<float> buffer (2, 256);
@@ -141,7 +141,7 @@ int main()
 {
     juce::ScopedJuceInitialiser_GUI juceInit;
 
-    std::cout << "Vellum parameter tests\n";
+    std::cout << "KloudFormant parameter tests\n";
 
     testSchemaIsStable();
     testDefaultsAreTransparent();

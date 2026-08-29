@@ -1,7 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-using namespace vellum;
+using namespace kloudformant;
 
 namespace
 {
@@ -10,11 +10,11 @@ namespace
     constexpr auto kLatencyAffecting = params::kTracking;
 }
 
-VellumAudioProcessor::VellumAudioProcessor()
+KloudFormantAudioProcessor::KloudFormantAudioProcessor()
     : AudioProcessor (BusesProperties()
                           .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                           .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
-      apvts (*this, nullptr, "VELLUM", params::create())
+      apvts (*this, nullptr, "KLOUDFORMANT", params::create())
 {
     shiftParam      = apvts.getRawParameterValue (params::kShift);
     lowPivotParam   = apvts.getRawParameterValue (params::kLowPivot);
@@ -30,13 +30,13 @@ VellumAudioProcessor::VellumAudioProcessor()
     apvts.addParameterListener (kLatencyAffecting, this);
 }
 
-VellumAudioProcessor::~VellumAudioProcessor()
+KloudFormantAudioProcessor::~KloudFormantAudioProcessor()
 {
     apvts.removeParameterListener (kLatencyAffecting, this);
 }
 
 //==============================================================================
-void VellumAudioProcessor::prepareToPlay (double sampleRate, int maximumExpectedSamplesPerBlock)
+void KloudFormantAudioProcessor::prepareToPlay (double sampleRate, int maximumExpectedSamplesPerBlock)
 {
     sampleRateForTail.store (sampleRate, std::memory_order_relaxed);
 
@@ -49,19 +49,19 @@ void VellumAudioProcessor::prepareToPlay (double sampleRate, int maximumExpected
     setLatencySamples (dsp.getLatencySamples());
 }
 
-void VellumAudioProcessor::releaseResources()
+void KloudFormantAudioProcessor::releaseResources()
 {
     dsp.reset();
 }
 
-double VellumAudioProcessor::getTailLengthSeconds() const
+double KloudFormantAudioProcessor::getTailLengthSeconds() const
 {
     const auto rate = sampleRateForTail.load (std::memory_order_relaxed);
 
     return rate > 0.0 ? (double) dsp.getLatencySamples() / rate : 0.0;
 }
 
-bool VellumAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool KloudFormantAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
     const auto& out = layouts.getMainOutputChannelSet();
 
@@ -72,7 +72,7 @@ bool VellumAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 }
 
 //==============================================================================
-DspCore::Params VellumAudioProcessor::currentParams() const noexcept
+DspCore::Params KloudFormantAudioProcessor::currentParams() const noexcept
 {
     DspCore::Params p;
 
@@ -91,7 +91,7 @@ DspCore::Params VellumAudioProcessor::currentParams() const noexcept
     return p;
 }
 
-void VellumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+void KloudFormantAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals noDenormals;
 
@@ -130,7 +130,7 @@ void VellumAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 }
 
 //==============================================================================
-void VellumAudioProcessor::parameterChanged (const juce::String&, float)
+void KloudFormantAudioProcessor::parameterChanged (const juce::String&, float)
 {
     // The frame size only actually changes inside DspCore::setParams, on the
     // audio thread, so the host is told from handleAsyncUpdate once that has
@@ -139,7 +139,7 @@ void VellumAudioProcessor::parameterChanged (const juce::String&, float)
     triggerAsyncUpdate();
 }
 
-void VellumAudioProcessor::handleAsyncUpdate()
+void KloudFormantAudioProcessor::handleAsyncUpdate()
 {
     const auto latency = dsp.getLatencySamples();
 
@@ -150,12 +150,12 @@ void VellumAudioProcessor::handleAsyncUpdate()
 }
 
 //==============================================================================
-juce::AudioProcessorEditor* VellumAudioProcessor::createEditor()
+juce::AudioProcessorEditor* KloudFormantAudioProcessor::createEditor()
 {
-    return new VellumAudioProcessorEditor (*this);
+    return new KloudFormantAudioProcessorEditor (*this);
 }
 
-void VellumAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void KloudFormantAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = apvts.copyState();
     state.setProperty ("stateVersion", params::kStateVersion, nullptr);
@@ -164,7 +164,7 @@ void VellumAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
         copyXmlToBinary (*xml, destData);
 }
 
-void VellumAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void KloudFormantAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     auto xml = getXmlFromBinary (data, sizeInBytes);
 
@@ -177,5 +177,5 @@ void VellumAudioProcessor::setStateInformation (const void* data, int sizeInByte
 //==============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new VellumAudioProcessor();
+    return new KloudFormantAudioProcessor();
 }

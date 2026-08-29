@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace vellum
+namespace kloudformant
 {
 
 namespace
@@ -239,4 +239,4 @@ FrameAnalysis SpectralEnvelope::analyse (const std::complex<double>* spectrum,
     return result;
 }
 
-} // namespace vellum
+} // namespace kloudformant

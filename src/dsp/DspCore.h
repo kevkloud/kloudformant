@@ -7,7 +7,7 @@
 #include <cmath>
 #include <vector>
 
-namespace vellum
+namespace kloudformant
 {
 
 /** One-pole parameter smoother.
@@ -127,4 +127,4 @@ private:
     bool freshlyPrepared = true;
 };
 
-} // namespace vellum
+} // namespace kloudformant

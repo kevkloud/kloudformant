@@ -1,4 +1,4 @@
-# Vellum
+# KloudFormant
 
 A formant shifter for monophonic vocals that is transparent when you are not
 using it, and does not sound robotic when you are. VST3 / AU / Standalone.
@@ -21,7 +21,7 @@ Most formant shifters take the signal apart and put it back together — analyse
 modify, resynthesize. The rebuilding is what makes them sound synthetic, and it
 happens at every setting, including no shift at all.
 
-Vellum never resynthesizes. It estimates the spectral envelope, works out the
+KloudFormant never resynthesizes. It estimates the spectral envelope, works out the
 difference between that envelope and where the envelope *would* be if the vocal
 tract were longer or shorter, and applies that difference to the untouched input
 as a gentle, slowly-varying EQ curve. Phase is never read and never written. The
@@ -80,7 +80,7 @@ Six causes, each of which is a design decision here. The long version, with the
 research behind it, is in [`docs/plan.md`](docs/plan.md).
 
 1. **Resynthesis** destroys the phase coherence across harmonics that makes a
-   glottal pulse a pulse. → Vellum filters instead.
+   glottal pulse a pulse. → KloudFormant filters instead.
 2. **Envelope estimators that track harmonics** drag partials around relative to
    each other. → True Envelope, with the cepstral order locked below the pitch
    period so tracking partials is impossible rather than unlikely.
@@ -114,8 +114,8 @@ measured impulse in the tests.
 ## Building
 
 ```bash
-git clone --recursive https://github.com/kevkloud/vellum-formant
-cd vellum-formant
+git clone --recursive https://github.com/kevkloud/kloudformant-formant
+cd kloudformant-formant
 cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure
@@ -126,9 +126,9 @@ build and run without an audio framework — useful in CI, and the reason the
 numbers above can be regenerated anywhere:
 
 ```bash
-cmake -B build-dsp -DVELLUM_DSP_ONLY=ON
+cmake -B build-dsp -DKLOUDFORMANT_DSP_ONLY=ON
 cmake --build build-dsp --parallel
-./build-dsp/VellumDspTests
+./build-dsp/KloudFormantDspTests
 ```
 
 ## Licence

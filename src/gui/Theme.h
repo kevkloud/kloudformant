@@ -2,7 +2,7 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
-namespace vellum::theme
+namespace kloudformant::theme
 {
 
 /** Palette and metrics.
@@ -50,4 +50,4 @@ inline juce::Font labelFont (float height)
     return juce::Font (juce::FontOptions {}.withHeight (height));
 }
 
-} // namespace vellum::theme
+} // namespace kloudformant::theme

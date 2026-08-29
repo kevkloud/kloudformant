@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace vellum
+namespace kloudformant
 {
 
 namespace
@@ -339,4 +339,4 @@ void FormantShifter::copyDisplayFrame (DisplayFrame& out) const
     std::copy_n (display.correctionDb.begin(), n, out.correctionDb.begin());
 }
 
-} // namespace vellum
+} // namespace kloudformant

@@ -1,6 +1,6 @@
 #include "ParameterLayout.h"
 
-namespace vellum::params
+namespace kloudformant::params
 {
 
 namespace
@@ -109,4 +109,4 @@ juce::AudioProcessorValueTreeState::ParameterLayout create()
     return layout;
 }
 
-} // namespace vellum::params
+} // namespace kloudformant::params
