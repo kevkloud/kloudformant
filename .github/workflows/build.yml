@@ -3,8 +3,18 @@ name: build
 on:
   push:
     branches: [main]
+    tags: ['v*']
+    paths-ignore: ['**.md', 'docs/**']
   pull_request:
+    paths-ignore: ['**.md', 'docs/**']
   workflow_dispatch:
+
+# A newer push to the same branch makes the in-flight run obsolete. Without
+# this, three pushes a minute apart pay for three full matrix builds and only
+# the last one's result is ever read.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   # The DSP core has no JUCE dependency, so the claims this plugin makes about
@@ -14,11 +24,13 @@ jobs:
   dsp:
     name: DSP
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
+      # No submodules: DSP-only never descends into libs/JUCE.
       - uses: actions/checkout@v4
 
       - name: Configure
-        run: cmake -B build -DVELLUM_DSP_ONLY=ON -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -DKLOUDFORMANT_DSP_ONLY=ON -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         run: cmake --build build --parallel
@@ -32,25 +44,46 @@ jobs:
   plugin:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: macOS
             os: macos-latest
-            # Universal, so one download covers Apple Silicon and Intel.
-            extra_cmake: -DCMAKE_OSX_ARCHITECTURES=arm64;x86_64
           - name: Windows
             os: windows-latest
-            extra_cmake: ""
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
+      # JUCE is a large, near-static dependency, so a warm compiler cache is
+      # most of the build. The Xcode/MSBuild generators ignore a compiler
+      # launcher, so this is macOS-only: there the default generator is
+      # Unix Makefiles, which honours it.
+      - name: Compiler cache
+        if: runner.os == 'macOS'
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ matrix.name }}
+
       - name: Configure
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release "${{ matrix.extra_cmake }}"
+        shell: bash
+        run: |
+          args=(-B build -DCMAKE_BUILD_TYPE=Release)
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            args+=(-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache)
+            # Universal binaries cost roughly double to compile and only matter
+            # for something someone downloads, so they are built for tags only.
+            if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+              args+=(-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64")
+            else
+              args+=(-DCMAKE_OSX_ARCHITECTURES="arm64")
+            fi
+          fi
+          cmake "${args[@]}"
 
       - name: Build
         run: cmake --build build --config Release --parallel 4
@@ -62,13 +95,13 @@ jobs:
         shell: bash
         run: |
           mkdir -p out
-          cp -R build/Vellum_artefacts/Release/VST3/Vellum.vst3 out/
-          if [ -d build/Vellum_artefacts/Release/AU/Vellum.component ]; then
-            cp -R build/Vellum_artefacts/Release/AU/Vellum.component out/
+          cp -R build/KloudFormant_artefacts/Release/VST3/KloudFormant.vst3 out/
+          if [ -d build/KloudFormant_artefacts/Release/AU/KloudFormant.component ]; then
+            cp -R build/KloudFormant_artefacts/Release/AU/KloudFormant.component out/
           fi
           cp LICENSE out/LICENSE.txt
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Vellum-${{ matrix.name }}
+          name: KloudFormant-${{ matrix.name }}
           path: out/
