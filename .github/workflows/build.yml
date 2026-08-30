@@ -59,22 +59,41 @@ jobs:
         with:
           submodules: recursive
 
-      # JUCE is a large, near-static dependency, so a warm compiler cache is
-      # most of the build. The Xcode/MSBuild generators ignore a compiler
-      # launcher, so this is macOS-only: there the default generator is
-      # Unix Makefiles, which honours it.
+      # Both platforms build with Ninja. It is a single-config generator, which
+      # is what makes a compiler cache usable at all: the Xcode and MSBuild
+      # generators ignore CMAKE_<LANG>_COMPILER_LAUNCHER, so ccache never sees
+      # the compile. Ninja ships in both runner images, but install it rather
+      # than trust that.
+      - name: Ensure Ninja
+        shell: bash
+        run: |
+          if ! command -v ninja >/dev/null 2>&1; then
+            if [ "${{ runner.os }}" = "macOS" ]; then brew install ninja; else choco install ninja -y; fi
+          fi
+          ninja --version
+
+      # Ninja invokes cl.exe directly, so the MSVC environment has to be on the
+      # PATH; the runner does not set it up outside of MSBuild.
+      - name: Set up MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      # JUCE is a large, near-static dependency, so a warm cache is most of the
+      # build. Release carries no /Zi, which is the one MSVC flag ccache cannot
+      # cache through.
       - name: Compiler cache
-        if: runner.os == 'macOS'
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ${{ matrix.name }}
+          max-size: 500M
 
       - name: Configure
         shell: bash
         run: |
-          args=(-B build -DCMAKE_BUILD_TYPE=Release)
+          args=(-B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+                -DCMAKE_C_COMPILER_LAUNCHER=ccache
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache)
           if [ "${{ runner.os }}" = "macOS" ]; then
-            args+=(-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache)
             # Universal binaries cost roughly double to compile and only matter
             # for something someone downloads, so they are built for tags only.
             if [[ "${{ github.ref }}" == refs/tags/* ]]; then
@@ -86,20 +105,24 @@ jobs:
           cmake "${args[@]}"
 
       - name: Build
-        run: cmake --build build --config Release --parallel 4
+        run: cmake --build build --parallel
 
       - name: Test
-        run: ctest --test-dir build -C Release --output-on-failure
+        run: ctest --test-dir build --output-on-failure
 
+      # Located rather than hardcoded: the artefact directory moved once
+      # already, under a rename, and silently broke this step.
       - name: Stage artefacts
         shell: bash
         run: |
           mkdir -p out
-          cp -R build/KloudFormant_artefacts/Release/VST3/KloudFormant.vst3 out/
-          if [ -d build/KloudFormant_artefacts/Release/AU/KloudFormant.component ]; then
-            cp -R build/KloudFormant_artefacts/Release/AU/KloudFormant.component out/
-          fi
+          vst3=$(find build -type d -name 'KloudFormant.vst3' | head -1)
+          if [ -z "$vst3" ]; then echo "no VST3 produced"; find build -name '*.vst3' -o -name '*_artefacts' | head -20; exit 1; fi
+          cp -R "$vst3" out/
+          au=$(find build -type d -name 'KloudFormant.component' | head -1)
+          if [ -n "$au" ]; then cp -R "$au" out/; fi
           cp LICENSE out/LICENSE.txt
+          ls -la out/
 
       - uses: actions/upload-artifact@v4
         with:
